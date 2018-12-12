@@ -1,0 +1,24 @@
+{
+  "name": "flexi-cache",
+  "version": "0.1.0",
+  "description": "Flexible and customizable in-memory cache",
+  "main": "index.js",
+  "scripts": {
+    "test": "test command here"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexShkunov/flexi-cache"
+  },
+  "keywords": [
+    "microservices",
+    "cache",
+    "fifo",
+    "lru",
+    "memory",
+    "ttl",
+    "keyvalue"
+  ],
+  "author": "tomanwalker",
+  "license": "MIT"
+}
