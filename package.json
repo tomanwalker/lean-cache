@@ -1,24 +1,31 @@
 {
-  "name": "flexi-cache",
-  "version": "0.1.0",
-  "description": "Flexible and customizable in-memory cache",
-  "main": "index.js",
-  "scripts": {
-    "test": "test command here"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/AlexShkunov/flexi-cache"
-  },
-  "keywords": [
-    "microservices",
-    "cache",
-    "fifo",
-    "lru",
-    "memory",
-    "ttl",
-    "keyvalue"
-  ],
-  "author": "tomanwalker",
-  "license": "MIT"
+	"name": "flexi-cache",
+	"version": "0.1.0",
+	"description": "Flexible and customizable in-memory cache",
+	"main": "index.js",
+	"scripts": {
+		"test": "mocha --exit --reporter json test/*.js &> ./test/report.json",
+		"coverage": "istanbul cover --config=istanbul.yml --report html --report lcov node_modules/mocha/bin/_mocha -- --exit test/*.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/AlexShkunov/flexi-cache"
+	},
+	"keywords": [
+		"microservices",
+		"cache",
+		"fifo",
+		"lru",
+		"memory",
+		"ttl",
+		"keyvalue"
+	],
+	"author": "tomanwalker",
+	"license": "MIT",
+	"devDependencies": {
+		"mocha": "*",
+		"istanbul": "*",
+		"chai": "*",
+		"proxyquire": "*"
+	}
 }
