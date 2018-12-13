@@ -50,7 +50,8 @@ describe(moduleName + '>> fifo', function(){
 			load: loadFunction // Where to get missing data
 		});
 		
-		expect(cacheObj.count()).to.equal(0);
+		print('init - cacheObj.count = ' + cacheObj.count());
+		expect(cacheObj.count(), `int >> Expected cacheObj.count to equal 0`).to.equal(0);
 		
 		done();
 	});
@@ -61,6 +62,7 @@ describe(moduleName + '>> fifo', function(){
 		cacheObj.get("1", function(err, result){
 			
 			print('access few - 1 callback...');
+			print('access few - 1 cacheObj.count = ' + cacheObj.count());
 			expect(cacheObj.count()).to.equal(1);
 			
 			expect(result.name).to.equal("dummy1");
@@ -68,6 +70,7 @@ describe(moduleName + '>> fifo', function(){
 			cacheObj.get("2", function(err, resultB){
 				
 				print('access few - 2 callback...');
+				print('access few - 2 cacheObj.count = ' + cacheObj.count());
 				
 				expect(cacheObj.count()).to.equal(2);
 				expect(resultB.name).to.equal("dummy2");
@@ -87,6 +90,7 @@ describe(moduleName + '>> fifo', function(){
 		expect(cacheObj.count()).to.equal(5);
 		
 		var lastObj = cacheObj.tail();
+		print('access overflow - last = ' + JSON.stringify(lastObj) );
 		expect(lastObj.name).to.equal("dummy20");
 		var firstObj = cacheObj.head();
 		expect(firstObj.name).to.equal("dummy16");
@@ -105,7 +109,7 @@ describe(moduleName + '>> fifo', function(){
 		}, 2050);
 	});
 });
-
+/*
 describe(moduleName + '>> lru', function(){
 	
 	it('init', function(done){
@@ -118,5 +122,5 @@ describe(moduleName + '>> lru', function(){
 		done();
 	});
 });
-
+*/
 
