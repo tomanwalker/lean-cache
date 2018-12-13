@@ -17,12 +17,12 @@ var storage = {};
 for(var i=0; i<100; i++){
 	storage[i.toString()] = { name:("dummy" + i) };
 };
-var loadFunction = function(id){
+var loadFunction = function(id, cb){
 	try{
-		return storage[id];
+		return cb(null, storage[id]);
 	}
 	catch(e){
-		return null;
+		return cb(true, null);
 	}
 };
 
@@ -40,6 +40,8 @@ describe(moduleName + '>> fifo', function(){
 	
 	it('init', function(done){
 		
+		print('init - start...');
+		
 		cacheObj = new unit({
 			size: 5, // 5 records max
 			ttl: 2, // 2 second
@@ -48,45 +50,55 @@ describe(moduleName + '>> fifo', function(){
 			load: loadFunction // Where to get missing data
 		});
 		
-		expect(cacheObj.count).to.equal(0);
+		expect(cacheObj.count()).to.equal(0);
 		
 		done();
 	});
 	it('access few', function(done){
 		
+		print('access few - start...');
+		
 		cacheObj.get("1", function(err, result){
 			
-			expect(cacheObj.count).to.equal(1);
+			print('access few - 1 callback...');
+			expect(cacheObj.count()).to.equal(1);
+			
 			expect(result.name).to.equal("dummy1");
 			
 			cacheObj.get("2", function(err, resultB){
 				
-				expect(cacheObj.count).to.equal(2);
+				print('access few - 2 callback...');
+				
+				expect(cacheObj.count()).to.equal(2);
 				expect(resultB.name).to.equal("dummy2");
 				done();
 			});
 		});
 	});
-	it('access over', function(done){
+	it('access overflow', function(done){
+		
+		print('access overflow - start...');
 		
 		for(var x=1; x<=20; x++){
 			cacheObj.get(x.toString());
 		}
 		
-		expect(cacheObj.count).to.equal(5);
+		print('access overflow - keys = ' + JSON.stringify(cacheObj.keys()) );
+		expect(cacheObj.count()).to.equal(5);
 		
-		var lastObj = cacheObj.tail;
+		var lastObj = cacheObj.tail();
 		expect(lastObj.name).to.equal("dummy20");
-		var firstObj = cacheObj.head;
-		expect(firstObj.name).to.equal("dummy15");
+		var firstObj = cacheObj.head();
+		expect(firstObj.name).to.equal("dummy16");
 		
 		done();
 	});
 	it('wait for expiery', function(done){
+		this.timeout(3000);
 		
 		setTimeout(function(){
 			
-			expect(cacheObj.count).to.equal(0);
+			expect(cacheObj.count()).to.equal(0);
 			
 			print('fifo - stats = ' + JSON.stringify(cacheObj.getStats()) );
 			done();

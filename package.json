@@ -4,7 +4,8 @@
 	"description": "Flexible and customizable in-memory cache",
 	"main": "index.js",
 	"scripts": {
-		"test": "mocha --exit --reporter json test/*.js &> ./test/report.json",
+		"test": "mocha --exit test/*.js",
+		"test-verbose": "mocha --exit --reporter json test/*.js &> ./test/report.json",
 		"coverage": "istanbul cover --config=istanbul.yml --report html --report lcov node_modules/mocha/bin/_mocha -- --exit test/*.js"
 	},
 	"repository": {
