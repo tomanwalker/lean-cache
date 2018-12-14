@@ -100,13 +100,15 @@ describe(moduleName + '>> fifo', function(){
 	it('wait for expiery', function(done){
 		this.timeout(3000);
 		
+		print('fifo - stats - start = ' + JSON.stringify(cacheObj.stats()) );
+		
 		setTimeout(function(){
 			
 			expect(cacheObj.count()).to.equal(0);
 			
-			print('fifo - stats = ' + JSON.stringify(cacheObj.getStats()) );
+			print('fifo - stats - end = ' + JSON.stringify(cacheObj.stats()) );
 			done();
-		}, 2050);
+		}, 1050);
 	});
 });
 /*
