@@ -33,8 +33,11 @@ module.exports = function(argumentOptions){
 		}
 	}
 	
-	var strategyClass = require('./lib/' + optionsToUse.strategy);
-	return new strategyClass(optionsToUse);
+	var StorageClass = require('./lib/' + 'storage.js');
+	var StrategyClass = require('./lib/' + optionsToUse.strategy);
+	var storageInstance = new StorageClass(optionsToUse.size);
+	
+	return new StrategyClass(optionsToUse, storageInstance);
 	
 };
 

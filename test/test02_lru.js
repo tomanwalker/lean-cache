@@ -31,10 +31,7 @@ var dirLevelUp = '../';
 var unit = require(dirLevelUp + 'index.js');
 
 // flow
-
-// TODO Init with different options
-
-describe(moduleName + '>> fifo', function(){
+describe(moduleName + '>> lru', function(){
 	
 	var cacheObj;
 	
@@ -46,7 +43,7 @@ describe(moduleName + '>> fifo', function(){
 			size: 5, // 5 records max
 			ttl: 2, // 2 second
 			iterval: 1, // 1 second
-			strategy: 'fifo', // First in first out
+			strategy: 'lru', // Least recently used is replaced
 			load: loadFunction // Where to get missing data
 		});
 		
@@ -67,14 +64,29 @@ describe(moduleName + '>> fifo', function(){
 			
 			expect(result.name).to.equal("dummy1");
 			
-			cacheObj.get("2", function(err, resultB){
+			cacheObj.get("2", function(err, resultA){
 				
-				print('access few - 2 callback...');
-				print('access few - 2 cacheObj.count = ' + cacheObj.count());
+				// 2 was added to tail
+				// After second use, it should be moved to Head
+				
+				print('access few - 2a callback...');
+				print('access few - 2a cacheObj.count = ' + cacheObj.count());
 				
 				expect(cacheObj.count()).to.equal(2);
-				expect(resultB.name).to.equal("dummy2");
-				done();
+				expect(resultA.name).to.equal("dummy2");
+				expect(cacheObj.tail().name).to.equal(resultA.name); // Here, Tail
+				
+				cacheObj.get("2", function(err, resultB){
+					
+					print('access few - 2b callback...');
+					print('access few - 2b cacheObj.count = ' + cacheObj.count());
+					
+					expect(cacheObj.count()).to.equal(2);
+					expect(resultA.name).to.equal("dummy2");
+					expect(cacheObj.head().name).to.equal(resultB.name); // Here, Moved to Head
+					
+					return done();
+				});
 			});
 		});
 	});
@@ -98,7 +110,7 @@ describe(moduleName + '>> fifo', function(){
 		done();
 	});
 	it('wait for expiery', function(done){
-		this.timeout(4000);
+		this.timeout(3000);
 		
 		print('fifo - stats - start = ' + JSON.stringify(cacheObj.stats()) );
 		
@@ -108,8 +120,7 @@ describe(moduleName + '>> fifo', function(){
 			
 			print('fifo - stats - end = ' + JSON.stringify(cacheObj.stats()) );
 			done();
-		}, 3050);
+		}, 1050);
 	});
 });
-
 
