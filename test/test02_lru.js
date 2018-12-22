@@ -40,15 +40,15 @@ describe(moduleName + '>> lru', function(){
 		print('init - start...');
 		
 		cacheObj = new unit({
-			size: 5, // 5 records max
-			ttl: 2, // 2 second
+			size: 7, // 7 records max
+			ttl: 3, // 3 second
 			iterval: 1, // 1 second
 			strategy: 'lru', // Least recently used is replaced
 			load: loadFunction // Where to get missing data
 		});
 		
 		print('init - cacheObj.count = ' + cacheObj.count());
-		expect(cacheObj.count(), `int >> Expected cacheObj.count to equal 0`).to.equal(0);
+		expect(cacheObj.count(), `init >> Expected cacheObj.count to equal 0`).to.equal(0);
 		
 		done();
 	});
@@ -97,30 +97,38 @@ describe(moduleName + '>> lru', function(){
 		for(var x=1; x<=20; x++){
 			cacheObj.get(x.toString());
 		}
+		for(var x=1; x<=10; x++){
+			cacheObj.get(x.toString());
+		}
+		
+		//Counting in prev results
+		// 2 = accessed 4 times
+		// 1 = accessed 3 times
+		// 3-10 = accessed 2 times
 		
 		print('access overflow - keys = ' + JSON.stringify(cacheObj.keys()) );
-		expect(cacheObj.count()).to.equal(5);
+		expect(cacheObj.count()).to.equal(7);
 		
 		var lastObj = cacheObj.tail();
 		print('access overflow - last = ' + JSON.stringify(lastObj) );
-		expect(lastObj.name).to.equal("dummy20");
+		expect(lastObj.name).to.equal("dummy7");
 		var firstObj = cacheObj.head();
-		expect(firstObj.name).to.equal("dummy16");
+		expect(firstObj.name).to.equal("dummy2");
 		
 		done();
 	});
 	it('wait for expiery', function(done){
-		this.timeout(3000);
+		this.timeout(4000);
 		
-		print('fifo - stats - start = ' + JSON.stringify(cacheObj.stats()) );
+		print('lru - stats - start = ' + JSON.stringify(cacheObj.stats()) );
 		
 		setTimeout(function(){
 			
 			expect(cacheObj.count()).to.equal(0);
 			
-			print('fifo - stats - end = ' + JSON.stringify(cacheObj.stats()) );
+			print('lru - stats - end = ' + JSON.stringify(cacheObj.stats()) );
 			done();
-		}, 1050);
+		}, 3050);
 	});
 });
 

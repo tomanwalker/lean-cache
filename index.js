@@ -33,12 +33,93 @@ module.exports = function(argumentOptions){
 		}
 	}
 	
+	var _this = this;
 	var StorageClass = require('./lib/' + 'storage.js');
 	var StrategyClass = require('./lib/' + optionsToUse.strategy);
-	var storageInstance = new StorageClass(optionsToUse.size);
+	var storage = new StorageClass(optionsToUse.size);
+	var strategyInstance = new StrategyClass(optionsToUse, storage);
 	
-	return new StrategyClass(optionsToUse, storageInstance);
+	this.statsHolder = {};
 	
+	// methods
+	this.tail = function(){
+		return storage.list.tail.value;
+	};
+	this.head = function(){
+		return storage.list.head.value;
+	};
+	this.keys = function(){
+		return Object.keys(storage.table);
+	};
+	this.count = function(){
+		return storage.count;
+	};
+	
+	this.set = function(key, value){
+		return strategyInstance.set(key, value);
+	};
+	this.getAsync = function(id, callback){
+		
+		if( storage.table[id] ){
+			return callback(null, strategyInstance.get(id).value);
+		}
+		else if( !optionsToUse.load ){
+			return callback('load function undefined', null);
+		}
+		else {
+			
+			//Load from remote
+			optionsToUse.load(id, function(err, result){
+				
+				_this.set(id, result);
+				return callback(err, strategyInstance.get(id).value);
+			});
+			
+		}
+	};
+	this.get = function(id, callback){
+		
+		if( typeof(callback) !== 'function' ){
+			callback = function(){};
+		}
+		
+		return this.getAsync(id, callback);
+	};
+	this.stats = function(){
+		
+		var statsObj = {
+			count: storage.count,
+			strategy: optionsToUse.strategy,
+			head: null,
+			headAdded: null,
+			tail: null,
+			tailAdded:null,
+			lastInterval: _this.statsHolder.lastInterval,
+			lastExpiredCount: _this.statsHolder.lastExpiredCount,
+			lastExpiredAdded: _this.statsHolder.lastExpiredAdded,
+		};
+		
+		if( storage.count > 0 ){
+			statsObj.head = storage.list.head.key;
+			statsObj.headAdded = storage.list.head.added;
+			statsObj.tail = storage.list.tail.key;
+			statsObj.tailAdded = storage.list.tail.added;
+		}
+		
+		return statsObj;
+	};
+	
+	if( optionsToUse.iterval > 0 ){
+		this.interval = setInterval(function(){
+			
+			var currentTime = new Date();
+			_this.statsHolder.lastInterval = currentTime.toISOString();
+			_this.statsHolder.lastExpiredCount = 0;
+			
+			strategyInstance.cleanup(currentTime, _this.statsHolder);
+			
+		}, (optionsToUse.iterval * 1000));
+	}
 };
 
 // ## static functions
