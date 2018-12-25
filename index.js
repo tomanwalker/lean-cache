@@ -35,7 +35,7 @@ module.exports = function(argumentOptions){
 	
 	var _this = this;
 	var StorageClass = require('./lib/' + 'storage.js');
-	var StrategyClass = require('./lib/' + optionsToUse.strategy);
+	var StrategyClass = require('./lib/strategies/' + optionsToUse.strategy);
 	var storage = new StorageClass(optionsToUse.size);
 	var strategyInstance = new StrategyClass(optionsToUse, storage);
 	
@@ -43,20 +43,29 @@ module.exports = function(argumentOptions){
 	
 	// methods
 	this.tail = function(){
-		return storage.list.tail.value;
+		return storage.table[storage.list.tail].value;
 	};
 	this.head = function(){
-		return storage.list.head.value;
+		return storage.table[storage.list.head].value;
 	};
 	this.keys = function(){
 		return Object.keys(storage.table);
+	};
+	this.elements = function(){
+		return storage.elements();
 	};
 	this.count = function(){
 		return storage.count;
 	};
 	
 	this.set = function(key, value){
-		return strategyInstance.set(key, value);
+		var obj = {
+			key: key,
+			added: new Date(),
+			useCount: 0,
+			value: value
+		};
+		return strategyInstance.set(key, obj);
 	};
 	this.getAsync = function(id, callback){
 		
@@ -100,10 +109,10 @@ module.exports = function(argumentOptions){
 		};
 		
 		if( storage.count > 0 ){
-			statsObj.head = storage.list.head.key;
-			statsObj.headAdded = storage.list.head.added;
-			statsObj.tail = storage.list.tail.key;
-			statsObj.tailAdded = storage.list.tail.added;
+			statsObj.head = storage.list.head;
+			statsObj.headAdded = storage.table[storage.list.head].added;
+			statsObj.tail = storage.list.tail;
+			statsObj.tailAdded = storage.table[storage.list.tail].added;
 		}
 		
 		return statsObj;

@@ -101,17 +101,17 @@ describe(moduleName + '>> lru', function(){
 			cacheObj.get(x.toString());
 		}
 		
-		//Counting in prev results
+		//Counting all get counts
 		// 2 = accessed 4 times
 		// 1 = accessed 3 times
 		// 3-10 = accessed 2 times
 		
-		print('access overflow - keys = ' + JSON.stringify(cacheObj.keys()) );
+		print('access overflow - el = ' + JSON.stringify(cacheObj.elements()) );
 		expect(cacheObj.count()).to.equal(7);
 		
 		var lastObj = cacheObj.tail();
 		print('access overflow - last = ' + JSON.stringify(lastObj) );
-		expect(lastObj.name).to.equal("dummy7");
+		expect(lastObj.name).to.equal("dummy10");
 		var firstObj = cacheObj.head();
 		expect(firstObj.name).to.equal("dummy2");
 		
@@ -121,12 +121,14 @@ describe(moduleName + '>> lru', function(){
 		this.timeout(4000);
 		
 		print('lru - stats - start = ' + JSON.stringify(cacheObj.stats()) );
+		print('lru - stats - start_el = ' + JSON.stringify(cacheObj.elements()) );
 		
 		setTimeout(function(){
 			
+			print('lru - stats - end = ' + JSON.stringify(cacheObj.stats()) );
+			print('lru - stats - end_el = ' + JSON.stringify(cacheObj.elements()) );
 			expect(cacheObj.count()).to.equal(0);
 			
-			print('lru - stats - end = ' + JSON.stringify(cacheObj.stats()) );
 			done();
 		}, 3050);
 	});
