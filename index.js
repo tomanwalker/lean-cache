@@ -15,11 +15,12 @@ var DEFAULT_OPTIONS = {
 module.exports = function(argumentOptions){
 	
 	// initialize
+	var defaultOpts = new DEFAULT_OPTIONS;
 	var optionsToUse;
 	
 	if( !argumentOptions ){
 		// just use the defaults
-		optionsToUse = DEFAULT_OPTIONS;
+		optionsToUse = defaultOpts;
 	}
 	else{
 		var validationMessage = validateInputConstructor(argumentOptions);
@@ -28,8 +29,8 @@ module.exports = function(argumentOptions){
 		}
 		
 		optionsToUse = {};
-		for(var p in DEFAULT_OPTIONS){
-			optionsToUse[p] = (argumentOptions[p]) ? argumentOptions[p] : DEFAULT_OPTIONS[p];
+		for(var p in defaultOpts){
+			optionsToUse[p] = (argumentOptions[p]) ? argumentOptions[p] : defaultOpts[p];
 		}
 	}
 	
