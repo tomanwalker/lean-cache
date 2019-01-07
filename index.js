@@ -15,7 +15,7 @@ var DEFAULT_OPTIONS = {
 module.exports = function(argumentOptions){
 	
 	// initialize
-	var defaultOpts = new DEFAULT_OPTIONS;
+	var defaultOpts = Object.assign({}, DEFAULT_OPTIONS);
 	var optionsToUse;
 	
 	if( !argumentOptions ){
