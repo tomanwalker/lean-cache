@@ -15,7 +15,7 @@ var DEFAULT_OPTIONS = {
 module.exports = function(argumentOptions){
 	
 	// initialize
-	var defaultOpts = Object.assign({}, DEFAULT_OPTIONS);
+	var defaultOpts = Object.create(DEFAULT_OPTIONS);
 	var optionsToUse;
 	
 	if( !argumentOptions ){
@@ -133,7 +133,24 @@ module.exports = function(argumentOptions){
 };
 
 // ## static functions
-var validateInputConstructor = function(options){
+var validateInputConstructor = function(opts){
+	
+	// 5m
+	if( typeof(opts.size) !== 'undefined' && (opts.size < 0 || opts.size > 5000000) ){
+		return {
+			message:'<size> should be a Number between 0 & 5000000',
+			attribute:'size',
+			input: opts.size
+		};
+	}
+	// 30 days
+	if( typeof(opts.ttl) !== 'undefined' && (opts.ttl < 0 || opts.ttl > 2592000) ){
+		return {
+			message:'<ttl> should be a Number of seconds between 0 & 2592000 (30 days)',
+			attribute: 'ttl',
+			input: opts.ttl
+		};
+	}
 	
 	return null;
 };

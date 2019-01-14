@@ -41,8 +41,10 @@ var unit = require(dirLevelUp + 'index.js');
 };
 */
 describe('size', function(){
+	
 	it('below', function(){
 		
+		print('size.below - start...');
 		var catched = false;
 		
 		try{
@@ -51,6 +53,7 @@ describe('size', function(){
 			});
 		}
 		catch(e){
+			print('size.below - e = ' + JSON.stringify(e));
 			catched = true;
 		}
 		
