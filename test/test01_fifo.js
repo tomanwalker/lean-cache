@@ -41,6 +41,7 @@ describe(moduleName + '>> fifo', function(){
 	it('init', function(done){
 		
 		print('init - start...');
+		print('init - typeof st = ' + typeof('fifo'));
 		
 		cacheObj = new unit({
 			size: 5, // 5 records max

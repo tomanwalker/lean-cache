@@ -2,11 +2,14 @@
 
 // Alex Shkunov - 2018 - Initial implmentation
 
+// ## dependencies
+var validator = require('./lib/validator');
+
 // ## constants
 var DEFAULT_OPTIONS = {
 	size: 100000, // 100k records max
 	ttl: (60 * 60), // 1 hour
-	iterval: 60, // 1 minute
+	iterval: 600, // 10 minutes
 	strategy: 'fifo', // First in first out
 	load: null // Where to get missing data
 };
@@ -23,7 +26,7 @@ module.exports = function(argumentOptions){
 		optionsToUse = defaultOpts;
 	}
 	else{
-		var validationMessage = validateInputConstructor(argumentOptions);
+		var validationMessage = validator.validateInputConstructor(argumentOptions);
 		if(validationMessage){
 			throw validationMessage;
 		}
@@ -35,12 +38,19 @@ module.exports = function(argumentOptions){
 	}
 	
 	var _this = this;
-	var StorageClass = require('./lib/' + 'storage.js');
-	var StrategyClass = require('./lib/strategies/' + optionsToUse.strategy);
-	var storage = new StorageClass(optionsToUse.size);
-	var strategyInstance = new StrategyClass(optionsToUse, storage);
-	
 	this.statsHolder = {};
+	
+	var StorageClass = require('./lib/' + 'storage.js');
+	var storage = new StorageClass(optionsToUse.size);
+	var StrategyClass;
+	
+	if( typeof(optionsToUse.strategy) === 'string' ){
+		StrategyClass = require('./lib/strategies/' + optionsToUse.strategy);
+	}
+	else {
+		StrategyClass = optionsToUse.strategy;
+	}
+	var strategyInstance = new StrategyClass(optionsToUse, storage);
 	
 	// methods
 	this.tail = function(){
@@ -130,29 +140,6 @@ module.exports = function(argumentOptions){
 			
 		}, (optionsToUse.iterval * 1000));
 	}
-};
-
-// ## static functions
-var validateInputConstructor = function(opts){
-	
-	// 5m
-	if( typeof(opts.size) !== 'undefined' && (opts.size < 0 || opts.size > 5000000) ){
-		return {
-			message:'<size> should be a Number between 0 & 5000000',
-			attribute:'size',
-			input: opts.size
-		};
-	}
-	// 30 days
-	if( typeof(opts.ttl) !== 'undefined' && (opts.ttl < 0 || opts.ttl > 2592000) ){
-		return {
-			message:'<ttl> should be a Number of seconds between 0 & 2592000 (30 days)',
-			attribute: 'ttl',
-			input: opts.ttl
-		};
-	}
-	
-	return null;
 };
 
 

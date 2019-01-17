@@ -153,7 +153,21 @@ describe('strategy', function(){
 	});
 	it('custom', function(){
 		var catched = false;
-		var custom = {};
+		var custom = function(opts, storage){
+			
+			this.opts = opts;
+			var store = storage;
+			
+			this.set = function(key, obj){
+				if(store.count >= this.opts.size){
+					return false; //deny
+				}
+				// add to Tail
+				store.add(key, obj);
+			};
+			
+			this.get = function(){};
+		};
 		
 		var test = new unit({
 			size: 1,
@@ -164,8 +178,10 @@ describe('strategy', function(){
 		test.set(2, 2); // Custom implements None replacement strategy, the second is then denied
 		
 		var keys = test.keys();
+		print('custom - keys = ' + JSON.stringify(keys));
+		
 		expect(keys.length).to.equal(1);
-		expect(keys[0]).to.equal(1);
+		expect(keys[0]).to.equal('1');
 		
 	});
 });
