@@ -118,7 +118,7 @@ describe(moduleName + '>> lru', function(){
 		done();
 	});
 	it('wait for expiery', function(done){
-		this.timeout(4000);
+		this.timeout(5000);
 		
 		print('lru - stats - start = ' + JSON.stringify(cacheObj.stats()) );
 		print('lru - stats - start_el = ' + JSON.stringify(cacheObj.elements()) );
@@ -130,7 +130,7 @@ describe(moduleName + '>> lru', function(){
 			expect(cacheObj.count()).to.equal(0);
 			
 			done();
-		}, 3050);
+		}, 4050);
 	});
 });
 

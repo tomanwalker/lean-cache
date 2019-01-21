@@ -53,6 +53,9 @@ module.exports = function(argumentOptions){
 	var strategyInstance = new StrategyClass(optionsToUse, storage);
 	
 	// methods
+	this.count = function(){
+		return storage.count;
+	};
 	this.tail = function(){
 		return storage.table[storage.list.tail].value;
 	};
@@ -64,9 +67,6 @@ module.exports = function(argumentOptions){
 	};
 	this.elements = function(){
 		return storage.elements();
-	};
-	this.count = function(){
-		return storage.count;
 	};
 	
 	this.set = function(key, value){
@@ -90,9 +90,13 @@ module.exports = function(argumentOptions){
 			
 			//Load from remote
 			optionsToUse.load(id, function(err, result){
-				
-				_this.set(id, result);
-				return callback(err, strategyInstance.get(id).value);
+				if(err){
+					return callback(err, null);
+				}
+				else {
+					_this.set(id, result);
+					return callback(null, strategyInstance.get(id).value);
+				}
 			});
 			
 		}
@@ -117,6 +121,7 @@ module.exports = function(argumentOptions){
 			lastInterval: _this.statsHolder.lastInterval,
 			lastExpiredCount: _this.statsHolder.lastExpiredCount,
 			lastExpiredAdded: _this.statsHolder.lastExpiredAdded,
+			lastExpiredRemoved: _this.statsHolder.lastExpiredRemoved,
 		};
 		
 		if( storage.count > 0 ){
@@ -130,13 +135,20 @@ module.exports = function(argumentOptions){
 	};
 	
 	if( optionsToUse.iterval > 0 ){
+		
 		this.interval = setInterval(function(){
 			
 			var currentTime = new Date();
 			_this.statsHolder.lastInterval = currentTime.toISOString();
-			_this.statsHolder.lastExpiredCount = 0;
 			
-			strategyInstance.cleanup(currentTime, _this.statsHolder);
+			if( storage.count > 0 ){
+				_this.statsHolder.lastExpiredCount = 0;
+				strategyInstance.cleanup(currentTime, function(expiredObj){
+					_this.statsHolder.lastExpiredCount++;
+					_this.statsHolder.lastExpiredAdded = expiredObj.added.toISOString();
+					_this.statsHolder.lastExpiredRemoved = currentTime.toISOString();
+				});
+			}
 			
 		}, (optionsToUse.iterval * 1000));
 	}
