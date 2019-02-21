@@ -136,6 +136,27 @@ module.exports = function(argumentOptions){
 	
 	if( optionsToUse.iterval > 0 ){
 		
+		var updateExpiredStats = function(expiredObj){
+			_this.statsHolder.lastExpiredCount++;
+			_this.statsHolder.lastExpiredAdded = expiredObj.added.toISOString();
+			_this.statsHolder.lastExpiredRemoved = currentTime.toISOString();
+		};
+		var basicCleanup = function(currentTime, removeHook){
+			for(var k in storage.table){
+				var obj = storage.table[k];
+				var objTime = new Date( obj.added.getTime() );
+				var objExpiery = new Date(objTime.getTime() + (optionsToUse.ttl * 1000));
+				var objDiff = objExpiery - currentTime;
+			
+				if( objDiff <= 0 ){
+					storage.removeByKey(pointer);
+					removeHook(obj);
+				}
+			}
+			
+			return true;
+		};
+		
 		this.interval = setInterval(function(){
 			
 			var currentTime = new Date();
@@ -143,11 +164,13 @@ module.exports = function(argumentOptions){
 			
 			if( storage.count > 0 ){
 				_this.statsHolder.lastExpiredCount = 0;
-				strategyInstance.cleanup(currentTime, function(expiredObj){
-					_this.statsHolder.lastExpiredCount++;
-					_this.statsHolder.lastExpiredAdded = expiredObj.added.toISOString();
-					_this.statsHolder.lastExpiredRemoved = currentTime.toISOString();
-				});
+				
+				if( typeof(strategyInstance.cleanup) === 'function'){
+					return strategyInstance.cleanup(currentTime, updateExpiredStats);
+				}
+				else{
+					return basicCleanup(currentTime, updateExpiredStats);
+				}
 			}
 			
 		}, (optionsToUse.iterval * 1000));
