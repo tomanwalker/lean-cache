@@ -76,8 +76,8 @@ Array of availible keys
 
 ## other
 ### replacement strategy
-'fifo' - First in First out, when <count> exceeds <size>, removes an element starting from Head
-'lru' - Least Recently Used, on every get sorts elements by popularity (Tail - Least / Head - Most), when <count> exceeds <size>, removes an element starting from Tail
+- 'fifo' - First in First out, when <count> exceeds <size>, removes an element starting from Head
+- 'lru' - Least Recently Used, on every get sorts elements by popularity (Tail - Least / Head - Most), when <count> exceeds <size>, removes an element starting from Tail
 
 **custom strategy**
 ```
@@ -92,12 +92,18 @@ var custom = function(opts, storage){
 		}
 		// add to Tail
 		store.add(key, obj);
+		return true;
 	};
 	
 	this.get = function(key){
 		return store.table[key];
 	};
 };
+
+var cacheObj = new LeanCache({size:1, strategy:custom});
+cacheObj.set('a', {}); //true
+cacheObj.set('b', {}); //false
+cacheObj.keys(); // ['a']
 ```
 
 ## Performance
