@@ -139,7 +139,7 @@ module.exports = function(argumentOptions){
 		var updateExpiredStats = function(expiredObj){
 			_this.statsHolder.lastExpiredCount++;
 			_this.statsHolder.lastExpiredAdded = expiredObj.added.toISOString();
-			_this.statsHolder.lastExpiredRemoved = currentTime.toISOString();
+			_this.statsHolder.lastExpiredRemoved = (new Date()).toISOString();
 		};
 		var basicCleanup = function(currentTime, removeHook){
 			for(var k in storage.table){
@@ -149,7 +149,7 @@ module.exports = function(argumentOptions){
 				var objDiff = objExpiery - currentTime;
 			
 				if( objDiff <= 0 ){
-					storage.removeByKey(pointer);
+					storage.removeByKey(k);
 					removeHook(obj);
 				}
 			}

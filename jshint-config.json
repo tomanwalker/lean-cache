@@ -1,0 +1,9 @@
+{
+  "esversion": 8,
+  "node": true,
+  "asi" : true,
+  "loopfunc": true,
+  "laxcomma": true,
+  "laxbreak": true,
+  "validthis": true
+}

@@ -64,3 +64,6 @@ typings/
 notes.txt
 package-lock.json
 test/report.json
+test/report_lint.txt
+
+

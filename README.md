@@ -2,7 +2,7 @@
 Lean and customizable in-memory cache.
 Allows to restrict cache in size as well as time. Provides different replacement strategies
 
-[![Build Status](https://travis-ci.org/AlexShkunov/flexi-cache.svg?branch=master)](https://travis-ci.org/AlexShkunov/flexi-cache)
+[![Build Status](https://travis-ci.org/AlexShkunov/lean-cache.svg?branch=master)](https://travis-ci.org/AlexShkunov/lean-cache)
 
 ## Quick start
 ```
