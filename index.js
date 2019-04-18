@@ -109,6 +109,9 @@ module.exports = function(argumentOptions){
 		
 		return this.getAsync(id, callback);
 	};
+	this.del = function(id){
+		return storage.removeByKey(id);
+	};
 	this.stats = function(){
 		
 		var statsObj = {
