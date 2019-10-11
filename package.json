@@ -1,6 +1,6 @@
 {
 	"name": "lean-cache",
-	"version": "0.1.3",
+	"version": "0.1.4",
 	"description": "Lean and customizable in-memory cache",
 	"main": "index.js",
 	"scripts": {
