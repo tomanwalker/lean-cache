@@ -11,7 +11,7 @@ var DEFAULT_OPTIONS = {
 	ttl: (60 * 60), // 1 hour
 	iterval: 600, // 10 minutes
 	strategy: 'fifo', // First in first out
-	load: function(id, callback){// Where to get missing data
+	load: function(id, callback){ // Where to get missing data
 		return callback('Not found = ' + id, null);
 	}
 };

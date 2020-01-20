@@ -1,0 +1,13 @@
+
+Planned
+========
+- Message or Warning when no callback provided for ".get()"
+
+-----
+
+Done
+========
+
+
+-----
+
