@@ -1,12 +1,34 @@
+<!---
+https://keepachangelog.com/en/1.0.0/
+Types of changes
+	Added - for new features.
+	Changed - for changes in existing functionality.
+	Deprecated - for soon-to-be removed features.
+	Removed - for now removed features.
+	Fixed - for any bug fixes.
+	Security - in case of vulnerabilities.
+-->
 
 Planned
 ========
-- Message or Warning when no callback provided for ".get()"
+- None strategy
+- Check methods for Argument validation and friendly error messages (eg arg is Num, actual is String)
+- promise implementation
+- make Load function optional
+- alternate storage (node-cache library)
+- logger as a setup option
 
 -----
 
 Done
 ========
+
+## [Unreleased]
+
+
+## [0.1.6] - 2020-03-06
+### Changed
+- Message or Warning when no callback provided for ".get()"
 
 
 -----

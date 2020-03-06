@@ -38,7 +38,7 @@ describe(moduleName + '>> fifo', function(){
 	
 	var cacheObj;
 	
-	it('init', function(done){
+	before(function(done){
 		
 		print('init - start...');
 		print('init - typeof st = ' + typeof('fifo'));
@@ -52,9 +52,10 @@ describe(moduleName + '>> fifo', function(){
 		});
 		
 		print('init - cacheObj.count = ' + cacheObj.count());
-		expect(cacheObj.count(), `int >> Expected cacheObj.count to equal 0`).to.equal(0);
+		//expect(cacheObj.count(), `int >> Expected cacheObj.count to equal 0`).to.equal(0);
 		
 		done();
+		
 	});
 	it('access few', function(done){
 		
@@ -81,22 +82,28 @@ describe(moduleName + '>> fifo', function(){
 	});
 	it('access overflow', function(done){
 		
-		print('access overflow - start...');
+		print('access overflow - start = ' + cacheObj.count());
 		
 		for(var x=1; x<=20; x++){
-			cacheObj.get(x.toString());
+			cacheObj.get(x.toString(), function(){});
 		}
 		
-		print('access overflow - keys = ' + JSON.stringify(cacheObj.keys()) );
-		expect(cacheObj.count()).to.equal(5);
+		print('access overflow - insert = ' + cacheObj.count());
 		
-		var lastObj = cacheObj.tail();
-		print('access overflow - last = ' + JSON.stringify(lastObj) );
-		expect(lastObj.name).to.equal("dummy20");
-		var firstObj = cacheObj.head();
-		expect(firstObj.name).to.equal("dummy16");
+		setTimeout(function(){
+			print('access overflow - keys = ' + JSON.stringify(cacheObj.keys()) );
+			expect(cacheObj.count()).to.equal(5);
+			
+			var lastObj = cacheObj.tail();
+			print('access overflow - last = ' + JSON.stringify(lastObj) );
+			expect(lastObj.name).to.equal("dummy20");
+			var firstObj = cacheObj.head();
+			expect(firstObj.name).to.equal("dummy16");
+			
+			done();
 		
-		done();
+		}, 50);
+		
 	});
 	it('wait for expiery', function(done){
 		this.timeout(4000);

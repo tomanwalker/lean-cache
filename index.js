@@ -106,6 +106,7 @@ module.exports = function(argumentOptions){
 	this.get = function(id, callback){
 		
 		if( typeof(callback) !== 'function' ){
+			console.error('lean-cache >> error - no callback provided - function get(id, callback){}');
 			callback = function(){};
 		}
 		

@@ -95,10 +95,10 @@ describe(moduleName + '>> lru', function(){
 		print('access overflow - start...');
 		
 		for(var x=1; x<=20; x++){
-			cacheObj.get(x.toString());
+			cacheObj.get(x.toString(), function(){});
 		}
 		for(var x=1; x<=10; x++){
-			cacheObj.get(x.toString());
+			cacheObj.get(x.toString(), function(){});
 		}
 		
 		//Counting all get counts
