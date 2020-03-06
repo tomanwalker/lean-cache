@@ -28,7 +28,7 @@ Done
 
 ## [0.1.6] - 2020-03-06
 ### Changed
-- Message or Warning when no callback provided for ".get()"
+- console Warning when no callback provided for ".get()"
 
 
 -----
