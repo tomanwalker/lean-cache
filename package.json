@@ -4,7 +4,7 @@
 	"description": "Lean and customizable in-memory cache",
 	"main": "index.js",
 	"scripts": {
-		"test": "mocha --exit test/*.js",
+		"test": "DEBUG=lean-cache mocha --exit test/*.js",
 		"test-verbose": "mocha --exit --reporter json test/*.js > ./test/report.json 2>&1",
 		"coverage": "istanbul cover --config=istanbul.yml --report html --report lcov node_modules/mocha/bin/_mocha -- --exit test/*.js",
 		"lint": "jshint --config jshint-config.json index.js lib/ > test/report_lint.txt",
@@ -16,6 +16,7 @@
 	},
 	"keywords": [
 		"microservices",
+		"backend",
 		"cache",
 		"fifo",
 		"lru",
@@ -34,5 +35,7 @@
 		"lru-cache": "^5.1.1",
 		"node-cache": "^4.2.0"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"debug": "^4.1.1"
+	}
 }

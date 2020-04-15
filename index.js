@@ -4,6 +4,7 @@
 
 // ## dependencies
 var validator = require('./lib/validator');
+var log = require('debug')('lean-cache');
 
 // ## constants
 var DEFAULT_OPTIONS = {
@@ -46,8 +47,21 @@ module.exports = function(argumentOptions){
 	var storage = new StorageClass(optionsToUse.size);
 	var StrategyClass;
 	
+	log('init - strategy =', optionsToUse.strategy, '| type =', typeof(optionsToUse.strategy) );
 	if( typeof(optionsToUse.strategy) === 'string' ){
-		StrategyClass = require('./lib/strategies/' + optionsToUse.strategy);
+		
+		var strategyFile = './lib/strategies/' + optionsToUse.strategy;
+		
+		try{
+			
+			StrategyClass = require( strategyFile );
+			
+		} catch(e){
+			console.error('lean-cache >> error - not valid strategy name -', optionsToUse.strategy,
+				' - valid options are [fifo, lru, none]');
+			return false;
+		}
+		
 	}
 	else {
 		StrategyClass = optionsToUse.strategy;
@@ -72,6 +86,9 @@ module.exports = function(argumentOptions){
 	};
 	
 	this.set = function(key, value){
+		
+		log('set - key =', key);
+		
 		var obj = {
 			key: key,
 			added: new Date(),
@@ -82,6 +99,8 @@ module.exports = function(argumentOptions){
 	};
 	this.getAsync = function(id, callback){
 		
+		log('getAsync - key =', id);
+		
 		if( storage.table[id] ){
 			return callback(null, strategyInstance.get(id).value);
 		}
@@ -91,13 +110,18 @@ module.exports = function(argumentOptions){
 		else {
 			
 			//Load from remote
-			optionsToUse.load(id, function(err, result){
+			return optionsToUse.load(id, function(err, result){
+				
+				log('getAsync - load.callback - key =', id, '| err =', err, '| result = ', result);
+				
 				if(err){
 					return callback(err, null);
 				}
 				else {
-					_this.set(id, result);
-					return callback(null, strategyInstance.get(id).value);
+					var set_ok = _this.set(id, result);
+					log('getAsync - load.callback - key =', id, '| set_ok =', set_ok);
+					
+					return callback(null, result);
 				}
 			});
 			

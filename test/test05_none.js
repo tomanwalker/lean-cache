@@ -31,30 +31,29 @@ var dirLevelUp = '../';
 var unit = require(dirLevelUp + 'index.js');
 
 // flow
-describe(moduleName + '>> fifo', function(){
+describe(moduleName + '>> none', function(){
 	
 	var cacheObj;
 	
-	before(function(done){
+	it('init', function(done){
 		
 		print('init - start...');
-		print('init - typeof st = ' + typeof('fifo'));
-		
 		cacheObj = new unit({
-			size: 5, // 5 records max
-			ttl: 2, // 2 second
+			size: 2, // 2 records max
+			ttl: 5, // 5 second
 			iterval: 1, // 1 second
-			strategy: 'fifo', // First in first out
+			strategy: 'none', // First in first out
 			load: loadFunction // Where to get missing data
 		});
 		
 		print('init - cacheObj.count = ' + cacheObj.count());
-		//expect(cacheObj.count(), `int >> Expected cacheObj.count to equal 0`).to.equal(0);
+		expect(cacheObj.count(), `int >> Expected cacheObj.count to equal 0`).to.equal(0);
 		
 		done();
 		
 	});
-	it('access few', function(done){
+	
+	it('get few', function(done){
 		
 		print('access few - start...');
 		
@@ -62,8 +61,8 @@ describe(moduleName + '>> fifo', function(){
 			
 			print('access few - 1 callback...');
 			print('access few - 1 cacheObj.count = ' + cacheObj.count());
-			expect(cacheObj.count()).to.equal(1);
 			
+			expect(cacheObj.count()).to.equal(1);
 			expect(result.name).to.equal("dummy1");
 			
 			cacheObj.get("2", function(err, resultB){
@@ -73,48 +72,57 @@ describe(moduleName + '>> fifo', function(){
 				
 				expect(cacheObj.count()).to.equal(2);
 				expect(resultB.name).to.equal("dummy2");
+				
 				done();
 			});
 		});
+		
 	});
-	it('access overflow', function(done){
+	
+	it('get overflow', function(done){
 		
-		print('access overflow - start = ' + cacheObj.count());
+		print('get overflow - 3 start...');
 		
-		for(var x=1; x<=20; x++){
-			cacheObj.get(x.toString(), function(){});
-		}
-		
-		print('access overflow - insert = ' + cacheObj.count());
-		
-		setTimeout(function(){
-			print('access overflow - keys = ' + JSON.stringify(cacheObj.keys()) );
-			expect(cacheObj.count()).to.equal(5);
+		cacheObj.get("10", function(err, result){
 			
-			var lastObj = cacheObj.tail();
-			print('access overflow - last = ' + JSON.stringify(lastObj) );
-			expect(lastObj.name).to.equal("dummy20");
-			var firstObj = cacheObj.head();
-			expect(firstObj.name).to.equal("dummy16");
+			print('get overflow - 3 callback...');
+			print('get overflow - 3 cacheObj.count = ' + cacheObj.count());
+			print('get overflow - 3 cacheObj.keys = ' + cacheObj.keys());
+			print('get overflow - 3 result = ' + result);
+			
+			var keys = cacheObj.keys();
+			
+			expect(cacheObj.count()).to.equal(2);
+			expect( keys[0] ).to.equal("1");
+			expect( keys[1] ).to.equal("2");
+			
+			expect(result.name).to.equal("dummy10");
+			
+			/// Here, cache does return overflow key "3" from storage, but doesnt replace previous
+			/// elements, giving TTL to handle the expiery and replacement
 			
 			done();
-		
-		}, 50);
+		});
 		
 	});
-	it('wait for expiery', function(done){
-		this.timeout(4000);
+	
+	it('set overflow', function(done){
 		
-		print('fifo - stats - start = ' + JSON.stringify(cacheObj.stats()) );
+		var result = cacheObj.set("new", {name:"test"});
 		
-		setTimeout(function(){
-			
-			expect(cacheObj.count()).to.equal(0);
-			
-			print('fifo - stats - end = ' + JSON.stringify(cacheObj.stats()) );
-			done();
-		}, 3050);
+		print('set overflow - res = ' + result);
+		expect(result).to.equal( false );
+		
+		var keys = cacheObj.keys();
+		
+		expect(cacheObj.count()).to.equal(2);
+		expect( keys[0] ).to.equal("1");
+		expect( keys[1] ).to.equal("2");
+		
+		done();
+		
 	});
+	
 });
 
 

@@ -42,7 +42,7 @@ cacheObj.get('abc', function(err, value){
 |size|0|5000000| | 5 mil |
 |ttl|0|2592000| | 30 days |
 |interval|0|86400| | 24 hours |
-|strategy| _ | _ | fifo, lru | [more](#other)
+|strategy| _ | _ | fifo, lru, none | [more](#other)
 
 ### .get(key, callback)
 if availible - returns a value from cache,
@@ -78,6 +78,7 @@ Array of availible keys
 ### replacement strategy
 - 'fifo' - First in First out, when <count> exceeds <size>, removes an element starting from Head
 - 'lru' - Least Recently Used, on every get sorts elements by popularity (Tail - Least / Head - Most), when <count> exceeds <size>, removes an element starting from Tail
+- 'none' - No replacement, elements are removed only on Time to Live basis
 
 **custom strategy**
 ```
