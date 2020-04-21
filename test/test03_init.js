@@ -146,10 +146,31 @@ describe('strategy', function(){
 			});
 		}
 		catch(e){
+			print('strategy - err = ' + JSON.stringify(e));
 			catched = true;
 		}
 		
 		expect(catched).to.be.true;
+	});
+	it('neg.custom', function(){
+		var catched = false;
+		var custom = function(opts, storage){
+			///nothing here on purpose
+		};
+		
+		try{
+			var test = new unit({
+				size: 1,
+				strategy: custom
+			});
+		}
+		catch(e){
+			print('neg.custom - err = ' + JSON.stringify(e));
+			catched = true;
+		}
+		
+		expect(catched).to.be.true;
+		
 	});
 	it('custom', function(){
 		var catched = false;

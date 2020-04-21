@@ -12,14 +12,13 @@ Types of changes
 Planned
 ========
 
-
-- Check methods for Argument validation and friendly error messages (eg arg is Num, actual is String)
-- promise implementation
-- make Load function optional
-
 - alternate storage (node-cache library)
+- promise implementation
+
+- make Load function optional
 - logger as a setup option
 - persistance (Reddis / MongoDB / MySQL)
+
 
 -----
 
@@ -29,6 +28,8 @@ Done
 ## [Unreleased]
 ### Added
 - None strategy
+### Changed
+- Throw an error if Strategy name does not exist
 
 
 ## [0.1.6] - 2020-03-06

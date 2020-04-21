@@ -22,7 +22,7 @@ module.exports = function(argumentOptions){
 	
 	// initialize
 	var defaultOpts = Object.create(DEFAULT_OPTIONS);
-	var optionsToUse;
+	var optionsToUse = null;
 	
 	if( !argumentOptions ){
 		// just use the defaults
@@ -50,20 +50,25 @@ module.exports = function(argumentOptions){
 	log('init - strategy =', optionsToUse.strategy, '| type =', typeof(optionsToUse.strategy) );
 	if( typeof(optionsToUse.strategy) === 'string' ){
 		
-		var strategyFile = './lib/strategies/' + optionsToUse.strategy;
+		var strategyNameValidate = validator.validateStrategyName(optionsToUse.strategy);
 		
-		try{
-			
-			StrategyClass = require( strategyFile );
-			
-		} catch(e){
-			console.error('lean-cache >> error - not valid strategy name -', optionsToUse.strategy,
-				' - valid options are [fifo, lru, none]');
-			return false;
+		if( strategyNameValidate ){
+			log('init - strategy - validation failed = %j', strategyNameValidate );
+			throw strategyNameValidate;
 		}
+		
+		var strategyFile = './lib/strategies/' + optionsToUse.strategy;
+		StrategyClass = require( strategyFile );
 		
 	}
 	else {
+		
+		var strategyFuncValidate = validator.validateStrategyFunc(optionsToUse.strategy);
+		if( strategyFuncValidate ){
+			log('init - strategy - validation failed = %j', strategyFuncValidate );
+			throw strategyFuncValidate;
+		}
+		
 		StrategyClass = optionsToUse.strategy;
 	}
 	var strategyInstance = new StrategyClass(optionsToUse, storage);
