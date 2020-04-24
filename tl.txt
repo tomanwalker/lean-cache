@@ -26,6 +26,10 @@ Done
 ========
 
 ## [Unreleased]
+
+
+
+## [0.1.7] - 2020-04-24
 ### Added
 - None strategy
 ### Changed

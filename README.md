@@ -107,6 +107,12 @@ cacheObj.set('b', {}); //false
 cacheObj.keys(); // ['a']
 ```
 
+### DEBUG
+Debugging is done via "debug" library, add ENV variable to enable.
+```
+DEBUG=lean-cache node your-very-cool-app.js
+```
+
 ## Performance
 ### vs array
 ```
