@@ -14,7 +14,7 @@ var print = function(msg){
 
 // target
 var dirLevelUp = '../';
-var unit = require(dirLevelUp + 'lib/storage.js');
+var unit = require(dirLevelUp + 'lib/storages/memory.js');
 
 // flow
 describe(moduleName + '>> positive', function(){

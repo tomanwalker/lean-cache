@@ -26,16 +26,16 @@
 	],
 	"author": "tomanwalker",
 	"license": "MIT",
+	"dependencies": {
+		"debug": "^4.1.1",
+		"node-cache": "4.2.1"
+	},
 	"devDependencies": {
-		"mocha": "*",
-		"istanbul": "*",
 		"chai": "*",
-		"proxyquire": "*",
+		"istanbul": "*",
 		"jshint": "*",
 		"lru-cache": "^5.1.1",
-		"node-cache": "^4.2.0"
-	},
-	"dependencies": {
-		"debug": "^4.1.1"
+		"mocha": "^7.1.2",
+		"proxyquire": "*"
 	}
 }

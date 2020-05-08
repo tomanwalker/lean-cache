@@ -4,6 +4,8 @@ var expect = require('chai').expect;
 var path = require('path');
 var proxyquire = require('proxyquire');
 
+var utils = require('./utils/utils');
+
 // config
 var moduleName = path.basename(__filename);
 
@@ -13,18 +15,7 @@ var print = function(msg){
 };
 
 // data
-var storage = {};
-for(var i=0; i<100; i++){
-	storage[i.toString()] = { name:("dummy" + i) };
-};
-var loadFunction = function(id, cb){
-	try{
-		return cb(null, storage[id]);
-	}
-	catch(e){
-		return cb(true, null);
-	}
-};
+var loadFunction = utils.loadFunc;
 
 // target
 var dirLevelUp = '../';
@@ -43,7 +34,7 @@ describe(moduleName + '>> fifo', function(){
 		cacheObj = new unit({
 			size: 5, // 5 records max
 			ttl: 2, // 2 second
-			iterval: 1, // 1 second
+			interval: 1, // 1 second
 			strategy: 'fifo', // First in first out
 			load: loadFunction // Where to get missing data
 		});

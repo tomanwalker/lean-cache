@@ -1,7 +1,5 @@
 "use strict";
 
-// Alex Shkunov - 2018 - Initial implmentation
-
 // ## dependencies
 var validator = require('./lib/validator');
 var log = require('debug')('lean-cache');
@@ -10,11 +8,12 @@ var log = require('debug')('lean-cache');
 var DEFAULT_OPTIONS = {
 	size: 100000, // 100k records max
 	ttl: (60 * 60), // 1 hour
-	iterval: 600, // 10 minutes
+	interval: 600, // 10 minutes
 	strategy: 'fifo', // First in first out
 	load: function(id, callback){ // Where to get missing data
 		return callback('Not found = ' + id, null);
-	}
+	},
+	storage: 'memory' // alternative storage
 };
 
 // ## export
@@ -27,10 +26,16 @@ module.exports = function(argumentOptions){
 	if( !argumentOptions ){
 		// just use the defaults
 		optionsToUse = defaultOpts;
+		log('init - opts - defaults...');
+		
 	}
 	else{
+		
+		log('init - opts - arg = %j', argumentOptions);
+		
 		var validationMessage = validator.validateInputConstructor(argumentOptions);
 		if(validationMessage){
+			log('init - opts - validator = %j', validationMessage);
 			throw validationMessage;
 		}
 		
@@ -38,14 +43,23 @@ module.exports = function(argumentOptions){
 		for(var p in defaultOpts){
 			optionsToUse[p] = (argumentOptions[p]) ? argumentOptions[p] : defaultOpts[p];
 		}
+		
+		if( argumentOptions.storage === 'node-cache' && !argumentOptions.strategy ){
+			optionsToUse.strategy = 'none';
+		}
 	}
+	
+	log('init - opts - optionsToUse = %j', optionsToUse);
 	
 	var _this = this;
 	this.statsHolder = {};
+	var StorageClass = null;
+	var StrategyClass = null;
+	var storage = null;
 	
-	var StorageClass = require('./lib/' + 'storage.js');
-	var storage = new StorageClass(optionsToUse.size);
-	var StrategyClass;
+	log('init - storage =', optionsToUse.storage );
+	StorageClass = require('./lib/storages/' + optionsToUse.storage);
+	storage = new StorageClass(optionsToUse.size, optionsToUse.ttl, optionsToUse.interval);
 	
 	log('init - strategy =', optionsToUse.strategy, '| type =', typeof(optionsToUse.strategy) );
 	if( typeof(optionsToUse.strategy) === 'string' ){
@@ -78,13 +92,13 @@ module.exports = function(argumentOptions){
 		return storage.count;
 	};
 	this.tail = function(){
-		return storage.table[storage.list.tail].value;
+		return storage.tail();
 	};
 	this.head = function(){
-		return storage.table[storage.list.head].value;
+		return storage.head();
 	};
 	this.keys = function(){
-		return Object.keys(storage.table);
+		return storage.keys();
 	};
 	this.elements = function(){
 		return storage.elements();
@@ -106,8 +120,11 @@ module.exports = function(argumentOptions){
 		
 		log('getAsync - key =', id);
 		
-		if( storage.table[id] ){
-			return callback(null, strategyInstance.get(id).value);
+		var val = strategyInstance.get(id);
+		log('getAsync - found = %j', val);
+		
+		if( val ){
+			return callback(null, val);
 		}
 		else if( !optionsToUse.load ){
 			return callback('load function undefined', null);
@@ -117,7 +134,7 @@ module.exports = function(argumentOptions){
 			//Load from remote
 			return optionsToUse.load(id, function(err, result){
 				
-				log('getAsync - load.callback - key =', id, '| err =', err, '| result = ', result);
+				log('getAsync - load.callback - key = %s | err = %j | result = %j', id, err, result);
 				
 				if(err){
 					return callback(err, null);
@@ -149,6 +166,7 @@ module.exports = function(argumentOptions){
 		var statsObj = {
 			count: storage.count,
 			strategy: optionsToUse.strategy,
+			storage: optionsToUse.storage,
 			head: null,
 			headAdded: null,
 			tail: null,
@@ -169,7 +187,7 @@ module.exports = function(argumentOptions){
 		return statsObj;
 	};
 	
-	if( optionsToUse.iterval > 0 ){
+	if( optionsToUse.interval > 0 && optionsToUse.storage === 'memory' ){
 		
 		var updateExpiredStats = function(expiredObj){
 			_this.statsHolder.lastExpiredCount++;
@@ -208,7 +226,7 @@ module.exports = function(argumentOptions){
 				}
 			}
 			
-		}, (optionsToUse.iterval * 1000));
+		}, (optionsToUse.interval * 1000));
 	}
 };
 

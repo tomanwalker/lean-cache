@@ -41,7 +41,7 @@ describe(moduleName + '>> none', function(){
 		cacheObj = new unit({
 			size: 2, // 2 records max
 			ttl: 5, // 5 second
-			iterval: 1, // 1 second
+			interval: 1, // 1 second
 			strategy: 'none', // First in first out
 			load: loadFunction // Where to get missing data
 		});

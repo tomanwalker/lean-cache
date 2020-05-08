@@ -12,12 +12,12 @@ Types of changes
 Planned
 ========
 
-- alternate storage (node-cache library)
+- Refactor + Clean from index to Storage (memory) + check GET returns value
 - promise implementation
 
 - make Load function optional
-- logger as a setup option
 - persistance (Reddis / MongoDB / MySQL)
+- events ( expiery / set / get )
 
 
 -----
@@ -26,7 +26,8 @@ Done
 ========
 
 ## [Unreleased]
-
+- logger as a setup option
+- alternate storage (node-cache library)
 
 
 ## [0.1.7] - 2020-04-24

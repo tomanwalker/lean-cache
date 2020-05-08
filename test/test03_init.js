@@ -35,9 +35,10 @@ var unit = require(dirLevelUp + 'index.js');
 {
 	size: 100000, // 100k records max
 	ttl: (60 * 60), // 1 hour
-	iterval: 60, // 1 minute
+	interval: 60, // 1 minute
 	strategy: 'fifo', // First in first out
-	load: null // Where to get missing data
+	load: null, // Where to get missing data
+	storage: 'memory' // storage
 };
 */
 describe('size', function(){
@@ -223,5 +224,38 @@ describe('load', function(){
 	});
 });
 
+describe('storage', function(){
+	it('dummy', function(){
+		
+		var catched = false;
+		
+		try{
+			var test = new unit({
+				storage: 'blabla'
+			});
+		}
+		catch(e){
+			catched = true;
+		}
+		
+		expect(catched).to.be.true;
+	});
+	it('conflict node-lru', function(){
+		
+		var catched = false;
+		
+		try{
+			var test = new unit({
+				storage: 'node-cache',
+				strategy: 'lru'
+			});
+		}
+		catch(e){
+			catched = true;
+		}
+		
+		expect(catched).to.be.true;
+	});
+});
 
 

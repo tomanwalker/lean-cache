@@ -32,9 +32,10 @@ cacheObj.get('abc', function(err, value){
 {
 	size: 100000, // 100k records max
 	ttl: (60 * 60), // 1 hour
-	iterval: 600, // 10 minutes
+	interval: 600, // 10 minutes
 	strategy: 'fifo', // First in first out
-	load: null // Where to get missing data
+	load: null, // Where to get missing data
+	storage: 'memory' // where to store cache objects
 }
 ```
 |att|min|max|enum|comment|
@@ -43,6 +44,7 @@ cacheObj.get('abc', function(err, value){
 |ttl|0|2592000| | 30 days |
 |interval|0|86400| | 24 hours |
 |strategy| _ | _ | fifo, lru, none | [more](#other)
+|storage| _ | _ | memory, node-cache | [more](#other)
 
 ### .get(key, callback)
 if availible - returns a value from cache,
@@ -112,6 +114,22 @@ Debugging is done via "debug" library, add ENV variable to enable.
 ```
 DEBUG=lean-cache node your-very-cool-app.js
 ```
+
+### storage options
+- 'memory' - Default, keeps objects in memory
+- 'node-cache' - keeps objects in memory, wrapping node-cache library (https://www.npmjs.com/package/node-cache/v/4.2.1)
+node-cache restricts cache only in time, wrapping allows to limit size & to enable Load if missing
+```
+var opts = {
+  load: loadFunc,
+  storage: 'node-cache',
+  strategy: 'none'
+};
+
+var cacheObj = new LeanCache(opts);
+
+```
+
 
 ## Performance
 ### vs array

@@ -4,6 +4,8 @@ var expect = require('chai').expect;
 var path = require('path');
 var proxyquire = require('proxyquire');
 
+var utils = require('./utils/utils');
+
 // config
 var moduleName = path.basename(__filename);
 
@@ -13,18 +15,7 @@ var print = function(msg){
 };
 
 // data
-var storage = {};
-for(var i=0; i<100; i++){
-	storage[i.toString()] = { name:("dummy" + i) };
-};
-var loadFunction = function(id, cb){
-	try{
-		return cb(null, storage[id]);
-	}
-	catch(e){
-		return cb(true, null);
-	}
-};
+var loadFunction = utils.loadFunc;
 
 // target
 var dirLevelUp = '../';
@@ -42,7 +33,7 @@ describe(moduleName + '>> lru', function(){
 		cacheObj = new unit({
 			size: 7, // 7 records max
 			ttl: 3, // 3 second
-			iterval: 1, // 1 second
+			interval: 1, // 1 second
 			strategy: 'lru', // Least recently used is replaced
 			load: loadFunction // Where to get missing data
 		});
@@ -78,11 +69,12 @@ describe(moduleName + '>> lru', function(){
 				
 				cacheObj.get("2", function(err, resultB){
 					
-					print('access few - 2b callback...');
+					print('access few - 2b callback - resultB = ' + JSON.stringify(resultB) );
 					print('access few - 2b cacheObj.count = ' + cacheObj.count());
+					print('access few - 2b cacheObj.elements = ' + JSON.stringify(cacheObj.elements()));
 					
 					expect(cacheObj.count()).to.equal(2);
-					expect(resultA.name).to.equal("dummy2");
+					expect(resultB.name).to.equal("dummy2");
 					expect(cacheObj.head().name).to.equal(resultB.name); // Here, Moved to Head
 					
 					return done();
@@ -90,6 +82,7 @@ describe(moduleName + '>> lru', function(){
 			});
 		});
 	});
+	
 	it('access overflow', function(done){
 		
 		print('access overflow - start...');
@@ -132,5 +125,6 @@ describe(moduleName + '>> lru', function(){
 			done();
 		}, 4050);
 	});
+	
 });
 
