@@ -1,8 +1,9 @@
-"use strict";
 
 // ## dependencies
-var validator = require('./lib/validator');
 var log = require('debug')('lean-cache');
+
+var validator = require('./lib/validator');
+var Cleaner = require('./lib/cleaner');
 
 // ## constants
 var DEFAULT_OPTIONS = {
@@ -20,7 +21,7 @@ var DEFAULT_OPTIONS = {
 module.exports = function(argumentOptions){
 	
 	// initialize
-	var defaultOpts = Object.create(DEFAULT_OPTIONS);
+	var defaultOpts = Object.assign({}, DEFAULT_OPTIONS);
 	var optionsToUse = null;
 	
 	if( !argumentOptions ){
@@ -87,7 +88,11 @@ module.exports = function(argumentOptions){
 	}
 	var strategyInstance = new StrategyClass(optionsToUse, storage);
 	
-	// methods
+	var cleanRunner = new Cleaner(
+		optionsToUse.ttl, optionsToUse.interval, storage, strategyInstance, this.statsHolder
+	);
+	
+	// ### methods
 	this.count = function(){
 		return storage.count;
 	};
@@ -187,47 +192,6 @@ module.exports = function(argumentOptions){
 		return statsObj;
 	};
 	
-	if( optionsToUse.interval > 0 && optionsToUse.storage === 'memory' ){
-		
-		var updateExpiredStats = function(expiredObj){
-			_this.statsHolder.lastExpiredCount++;
-			_this.statsHolder.lastExpiredAdded = expiredObj.added.toISOString();
-			_this.statsHolder.lastExpiredRemoved = (new Date()).toISOString();
-		};
-		var basicCleanup = function(currentTime, removeHook){
-			for(var k in storage.table){
-				var obj = storage.table[k];
-				var objTime = new Date( obj.added.getTime() );
-				var objExpiery = new Date(objTime.getTime() + (optionsToUse.ttl * 1000));
-				var objDiff = objExpiery - currentTime;
-			
-				if( objDiff <= 0 ){
-					storage.removeByKey(k);
-					removeHook(obj);
-				}
-			}
-			
-			return true;
-		};
-		
-		this.interval = setInterval(function(){
-			
-			var currentTime = new Date();
-			_this.statsHolder.lastInterval = currentTime.toISOString();
-			
-			if( storage.count > 0 ){
-				_this.statsHolder.lastExpiredCount = 0;
-				
-				if( typeof(strategyInstance.cleanup) === 'function'){
-					return strategyInstance.cleanup(currentTime, updateExpiredStats);
-				}
-				else{
-					return basicCleanup(currentTime, updateExpiredStats);
-				}
-			}
-			
-		}, (optionsToUse.interval * 1000));
-	}
 };
 
 

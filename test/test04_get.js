@@ -49,4 +49,41 @@ describe('GET', function(){
 	});
 });
 
+describe('printing', function(){
+	it('quick check', function(done){
+		
+		var quickPrintBody = function(parent){
+			return function(err, body){
+				print('quick - ' + parent + ' - body = ' + JSON.stringify(body));
+				expect(body.name).to.equal('dummy1');
+				
+			};
+		};
+		
+		var fifo = new unit({
+			load: loadFunction,
+			strategy: 'fifo'
+		});
+		
+		fifo.get('1', quickPrintBody('fifo') );
+		
+		var lru = new unit({
+			load: loadFunction,
+			strategy: 'lru'
+		});
+		lru.get('1', quickPrintBody('lru') );
+		
+		var none = new unit({
+			load: loadFunction,
+			strategy: 'none'
+		});
+		none.get('1', quickPrintBody('none') );
+		
+		setTimeout(function(){
+			done();
+			
+		}, 500);
+	});
+});
+
 

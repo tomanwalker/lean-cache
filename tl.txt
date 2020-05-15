@@ -12,8 +12,8 @@ Types of changes
 Planned
 ========
 
-- Refactor + Clean from index to Storage (memory) + check GET returns value
 - promise implementation
+- coverage check
 
 - make Load function optional
 - persistance (Reddis / MongoDB / MySQL)
@@ -26,8 +26,11 @@ Done
 ========
 
 ## [Unreleased]
+### Added
 - logger as a setup option
 - alternate storage (node-cache library)
+### Changed
+- encapsulated Interval runner into own module
 
 
 ## [0.1.7] - 2020-04-24
