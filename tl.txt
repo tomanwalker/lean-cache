@@ -12,12 +12,12 @@ Types of changes
 Planned
 ========
 
-- promise implementation
 - coverage check
 
 - make Load function optional
 - persistance (Reddis / MongoDB / MySQL)
 - events ( expiery / set / get )
+- promise implementation (add to "get")
 
 
 -----
@@ -26,11 +26,16 @@ Done
 ========
 
 ## [Unreleased]
+
+
+## [0.1.8] - 2020-05-26
 ### Added
 - logger as a setup option
 - alternate storage (node-cache library)
+- ".getPromise(id)" function
 ### Changed
 - encapsulated Interval runner into own module
+- LRU module logging
 
 
 ## [0.1.7] - 2020-04-24

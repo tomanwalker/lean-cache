@@ -1,6 +1,7 @@
 
 // ## dependencies
 var log = require('debug')('lean-cache');
+var events = require('events');
 
 var validator = require('./lib/validator');
 var Cleaner = require('./lib/cleaner');
@@ -57,6 +58,7 @@ module.exports = function(argumentOptions){
 	var StorageClass = null;
 	var StrategyClass = null;
 	var storage = null;
+	var emitter = new events.EventEmitter();
 	
 	log('init - storage =', optionsToUse.storage );
 	StorageClass = require('./lib/storages/' + optionsToUse.storage);
@@ -89,8 +91,17 @@ module.exports = function(argumentOptions){
 	var strategyInstance = new StrategyClass(optionsToUse, storage);
 	
 	var cleanRunner = new Cleaner(
-		optionsToUse.ttl, optionsToUse.interval, storage, strategyInstance, this.statsHolder
+		optionsToUse.ttl, optionsToUse.interval, storage, strategyInstance, this.statsHolder, emitter
 	);
+	
+	emitter.on('expiery', function(obj){
+		var cnt = _this.count();
+		log('on - expiery - key = %s | cnt = %s', obj.key, cnt);
+		
+		if( cnt === 0 ){
+			cleanRunner.stop();
+		}
+	});
 	
 	// ### methods
 	this.count = function(){
@@ -119,7 +130,9 @@ module.exports = function(argumentOptions){
 			useCount: 0,
 			value: value
 		};
-		return strategyInstance.set(key, obj);
+		var result = strategyInstance.set(key, obj);
+		cleanRunner.start();
+		return result;
 	};
 	this.getAsync = function(id, callback){
 		
@@ -154,6 +167,16 @@ module.exports = function(argumentOptions){
 			
 		}
 	};
+	this.getPromise = function(id){
+		return new Promise(function(resolve, reject){
+			_this.getAsync(id, function(err, body){
+				if(err){
+					return reject(err);
+				}
+				return resolve(body);
+			});
+		});
+	};
 	this.get = function(id, callback){
 		
 		if( typeof(callback) !== 'function' ){
@@ -163,6 +186,7 @@ module.exports = function(argumentOptions){
 		
 		return this.getAsync(id, callback);
 	};
+	
 	this.del = function(id){
 		return storage.removeByKey(id);
 	};
