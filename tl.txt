@@ -12,8 +12,6 @@ Types of changes
 Planned
 ========
 
-- coverage check
-
 - make Load function optional
 - persistance (Reddis / MongoDB / MySQL)
 - events ( expiery / set / get )
@@ -26,7 +24,8 @@ Done
 ========
 
 ## [Unreleased]
-
+### Fixed
+- coverage check
 
 ## [0.1.8] - 2020-05-26
 ### Added
