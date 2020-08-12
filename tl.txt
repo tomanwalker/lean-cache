@@ -12,7 +12,6 @@ Types of changes
 Planned
 ========
 
-- make Load function optional
 - persistance (Reddis / MongoDB / MySQL)
 - events ( expiery / set / get )
 - promise implementation (add to "get")
@@ -24,8 +23,13 @@ Done
 ========
 
 ## [Unreleased]
+
+
+## [0.1.9] - 2020-08-12
 ### Fixed
 - coverage check
+### Changed
+- make Load function optional
 
 ## [0.1.8] - 2020-05-26
 ### Added

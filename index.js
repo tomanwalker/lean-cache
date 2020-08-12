@@ -13,7 +13,7 @@ var DEFAULT_OPTIONS = {
 	interval: 600, // 10 minutes
 	strategy: 'fifo', // First in first out
 	load: function(id, callback){ // Where to get missing data
-		return callback('Not found = ' + id, null);
+		return callback('Not found - ' + id, null);
 	},
 	storage: 'memory' // alternative storage
 };
@@ -142,7 +142,7 @@ module.exports = function(argumentOptions){
 		log('getAsync - found = %j', val);
 		
 		if( val ){
-			return callback(null, val);
+			return callback(null, val.value);
 		}
 		else if( !optionsToUse.load ){
 			return callback('load function undefined', null);
